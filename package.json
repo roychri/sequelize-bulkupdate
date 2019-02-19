@@ -1,0 +1,20 @@
+{
+  "name": "sequelize-pg-bulkupdate",
+  "version": "1.0.0",
+  "description": "Sequelize add-on to allow optiomized bulk update on postgresql",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "sequelize",
+    "postgresql",
+    "pg",
+    "bulk"
+  ],
+  "author": "Christian Roy <christian@roy.name>",
+  "license": "ISC",
+  "dependencies": {
+    "sequelize": "^4.42.0"
+  }
+}
