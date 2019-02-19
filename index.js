@@ -68,17 +68,15 @@ function sqlForBulkUpdate(tableName, values, options, attributes, model) {
         acc.push(a.fieldName);
         return acc;
     }, [] );
-    let updateValues = [];
-    for (let field of fields) {
-        updateValues.push(`"${field}" = "data_table"."${field}"`);
-    }
     const type = attributes[primaryKey].type.toSql();
     let selects = [
         `UNNEST(array[:${primaryKey}])::${type} as ${primaryKey}`
     ];
+    let updateValues = [];
     for (const field of fields) {
         const type = attributes[field].type.toSql();
         selects.push(`UNNEST(array[:${field}])::${type} as ${field}`);
+        updateValues.push(`"${field}" = "data_table"."${field}"`);
     }
 
     let sql = `UPDATE ${quotedTableName} `;
