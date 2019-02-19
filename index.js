@@ -76,12 +76,12 @@ function sqlForBulkUpdate(tableName, values, options, attributes, model) {
         `UNNEST(array[:${primaryKey}]) as ${primaryKey}`
     ];
     for (const field of fields) {
-        selects.push(`UNNEST(array[:${field}]) as ${field}) as "data_table"`);
+        selects.push(`UNNEST(array[:${field}]) as ${field}`);
     }
 
     let sql = `UPDATE ${quotedTableName} `;
     sql += `SET ${updateValues.join(', ')} FROM `;
-    sql += `(SELECT ${selects.join(', ')} `;
+    sql += `(SELECT ${selects.join(', ')}) as "data_table" `;
     let where = `${quotedTableName}."${primaryKey}" = "data_table"."${primaryKey}"`;
     sql += `WHERE ${where}`;
 
