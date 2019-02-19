@@ -64,6 +64,7 @@ function sqlForBulkUpdate(tableName, values, options, attributes, model) {
         if (a.fieldName == primaryKey) return acc;
         if (options.fields && !options.fields.includes(a.fieldName))
             return acc;
+        if (!Object.keys(values[0]).includes(a.fieldName)) return acc;
         acc.push(a.fieldName);
         return acc;
     }, [] );
