@@ -16,5 +16,8 @@
   "license": "ISC",
   "dependencies": {
     "sequelize": "^4.42.0"
+  },
+  "devDependencies": {
+    "pg": "^7.8.0"
   }
 }
