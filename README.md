@@ -1,5 +1,51 @@
 # Sequelize PostgreSQL bulkUpdate
 
+This module allow one person to update many rows at once, each having different values to update.
+
+Sequelize currently support bulk updating only when you have a bunch of rows that yuo want to update to the same value.
+
+```js
+User.update({
+    yearly_salary: 200000
+}, {
+    where: {
+        company: 'Google',
+        is_programmer: true
+    }
+});
+```
+
+This will find all the developers at google and set their yearly salary to 200k. It does update more than one row but all of them will have the same column updated to the same value.
+
+But what if you have an array like this:
+
+```js
+const salaryUpdates = [
+    {id: 3446, yearly_salary: 200000},
+    {id: 7346, yearly_salary: 210000},
+    {id: 2357, yearly_salary: 250000},
+    {id: 54, yearly_salary: 600000},
+];
+```
+
+Traditionnaly with Sequelize, you would have to loop thru that and update them one by one. Each update would generate a different SQL update query. It's not so bad when you have only 4, but what if you have 600k rows to update? Sending 600k update queries to the DB will cause lots of network traffic, will cause lots of transactions and will take some time.
+
+PostgreSQL allow us to update many rows in a **single** SQL query.
+
+As described on this [StackOverflow answer](https://stackoverflow.com/a/20224370/1260068), you can do something like this:
+
+```sql
+UPDATE users SET yearly_salary = data_table.yearly_salary
+from
+(
+    SELECT UNNEST(array[3446,7346,2357,54]) AS id, 
+           UNNEST(array[200000,210000,250000,600000]) AS yearly_salary
+) AS data_table
+WHERE users.id = data_table.id;
+```
+
+This module exploits this method of bulk updating in order to update 600k rows by doing let's say 1k at a time (rather than one by one).
+
 ## Installation
 
 ```sh
