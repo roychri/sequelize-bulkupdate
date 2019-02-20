@@ -1,4 +1,6 @@
-# Sequelize PostgreSQL bulkUpdate
+# Sequelize bulkUpdate
+
+> **WARNING: This only works for POSTGRESQL at the moment. Patches are welcome**
 
 This module allow one person to update many rows at once, each having different values to update.
 
