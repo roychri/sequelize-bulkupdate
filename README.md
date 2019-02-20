@@ -4,7 +4,8 @@
 
 This module allow one person to update many rows at once, each having different values to update.
 
-Sequelize currently support bulk updating only when you have a bunch of rows that yuo want to update to the same value.
+## The Problem
+Sequelize currently support bulk updating only when you have a bunch of rows that you want to update to the same value.
 
 ```js
 User.update({
@@ -31,6 +32,8 @@ const salaryUpdates = [
 ```
 
 Traditionnaly with Sequelize, you would have to loop thru that and update them one by one. Each update would generate a different SQL update query. It's not so bad when you have only 4, but what if you have 600k rows to update? Sending 600k update queries to the DB will cause lots of network traffic, will cause lots of transactions and will take some time.
+
+## The solution
 
 PostgreSQL allow us to update many rows in a **single** SQL query.
 
