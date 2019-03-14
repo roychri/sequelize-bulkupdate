@@ -4,7 +4,17 @@
   "description": "Sequelize add-on to allow optiomized bulk update on postgresql",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "yarn dev:test",
+    "test": "yarn run jasmine",
+    "dev:test": "yarn run nodemon --exec \"yarn test\""
+  },
+  "nodemonConfig": {
+    "ignore": [
+      "node_modules/*",
+      ".git/*"
+    ],
+    "ext": "js,json,yml,yaml",
+    "delay": "500"
   },
   "keywords": [
     "sequelize",
