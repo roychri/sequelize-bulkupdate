@@ -12,7 +12,7 @@ describe( 'sequelizeBulkUpdate', () =>
     {
         Visitor = sequelize.define( `Visitor-${ uuid() }`, {
             name: Sequelize.STRING,
-            ticketnumber: Sequelize.DOUBLE,
+            ticket: Sequelize.BIGINT,
         });
         await sequelize.sync();
         sequelizeUpdate( Visitor );
@@ -24,7 +24,7 @@ describe( 'sequelizeBulkUpdate', () =>
     });
 
     /**
-     * @type { Sequelize.Model<any, { name: {}, ticketnumber: {} }> }
+     * @type { Sequelize.Model<any, { name: string, ticket: number }> }
      */
     let Visitor;
 
@@ -36,9 +36,27 @@ describe( 'sequelizeBulkUpdate', () =>
         host: PG_HOST,
     });
 
-    it( 'hehe', () =>
+    it( 'update in bulk', async () =>
     {
-        console.log( '...' );
+        const names = [ ...Array( 15 ) ].map( () => uuid() );
+        const visitors = ( await Visitor.bulkCreate(
+            names.map( () => ({ name: uuid(), ticket: getUN() }) ),
+            { returning: true }) ).map( ({ dataValues }) => dataValues );
+
+        await Visitor.bulkUpdate( visitors.map(
+            ({ ticket }, index) => ({ ticket, name: names[index] })), { key: 'ticket' });
+
+        const updated = await Visitor.findAll({ where: { id: visitors.map( ({ id }) => id ) } });
+        const EACH_UPDATE = updated.map( updated => [ visitors.find( ({ id }) => id == updated.id ), updated ])
+            .every( ([ { id, name, ticket }, { id: uid, name: uname, ticket: uticket }]) =>
+                id === id && +ticket === +uticket && name !== uname )
+
+        expect( EACH_UPDATE ).toBe( true );
     });
 
 });
+
+function getUN()
+{
+    return +`${ Math.random() }`.slice( 2 );
+}
