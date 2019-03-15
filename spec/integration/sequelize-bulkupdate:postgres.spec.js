@@ -41,13 +41,12 @@ describe( 'sequelizeBulkUpdate', () =>
 
         it( 'by id (default)', async () =>
         {
-            const key = 'id';
             const returning = true;
             const tickets = [ ...Array( 2 ) ].map( () => getUN() );
             const visitors = ( await Visitor.bulkCreate( tickets.map( () =>
                 ({ name: uuid(), ticket: getUN() }) ), { returning }) ).map( ({ dataValues }) => dataValues );
 
-            await Visitor.bulkUpdate( visitors.map( ({ id }, index ) => ({ id, ticket: tickets[ index ] }) ), { key });
+            await Visitor.bulkUpdate( visitors.map( ({ id }, index ) => ({ id, ticket: tickets[ index ] }) ));
 
             const BULK_UPDATED = ( await Visitor.findAll({ where: { id: visitors.map( ({ id }) => id ) } }) ).map( visitor =>
                 [ visitor, visitors.findIndex( ({ id }) => id === visitor.id ) ] ).map( ([ visitor, index ]) =>
