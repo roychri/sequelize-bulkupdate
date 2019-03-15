@@ -39,11 +39,30 @@ describe( 'sequelizeBulkUpdate', () =>
     describe( 'update in bulk', () =>
     {
 
+        it( 'by id (default)', async () =>
+        {
+            const key = 'id';
+            const returning = true;
+            const tickets = [ ...Array( 2 ) ].map( () => getUN() );
+            const visitors = ( await Visitor.bulkCreate( tickets.map( () =>
+                ({ name: uuid(), ticket: getUN() }) ), { returning }) ).map( ({ dataValues }) => dataValues );
+
+            await Visitor.bulkUpdate( visitors.map( ({ id }, index ) => ({ id, ticket: tickets[ index ] }) ), { key });
+
+            const BULK_UPDATED = ( await Visitor.findAll({ where: { id: visitors.map( ({ id }) => id ) } }) ).map( visitor =>
+                [ visitor, visitors.findIndex( ({ id }) => id === visitor.id ) ] ).map( ([ visitor, index ]) =>
+                    [ visitor, visitors[ index ], tickets[ index ] ]).every( ([
+                        { id, name, ticket }, { id: _id, name: _name, ticket: _ticket }, ticketx
+                    ]) => +_id === +id && _name === name && +_ticket !== +ticket && +ticket === +ticketx );
+
+            expect( BULK_UPDATED ).toBe( true );
+        });
+
         it( 'by custom key', async () =>
         {
             const key = 'ticket';
             const returning = true;
-            const names = [ ...Array( 15 ) ].map( () => uuid() );
+            const names = [ ...Array( 2 ) ].map( () => uuid() );
             const visitors = ( await Visitor.bulkCreate( names.map( () =>
                 ({ name: uuid(), ticket: getUN() }) ), { returning }) ).map( ({ dataValues }) => dataValues );
 
