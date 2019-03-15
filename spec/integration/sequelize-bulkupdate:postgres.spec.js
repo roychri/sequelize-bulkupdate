@@ -38,20 +38,21 @@ describe( 'sequelizeBulkUpdate', () =>
 
     it( 'update in bulk', async () =>
     {
+        const key = 'ticket';
+        const returning = true;
         const names = [ ...Array( 15 ) ].map( () => uuid() );
-        const visitors = ( await Visitor.bulkCreate(
-            names.map( () => ({ name: uuid(), ticket: getUN() }) ),
-            { returning: true }) ).map( ({ dataValues }) => dataValues );
+        const visitors = ( await Visitor.bulkCreate( names.map( () =>
+            ({ name: uuid(), ticket: getUN() }) ), { returning }) ).map( ({ dataValues }) => dataValues );
 
-        await Visitor.bulkUpdate( visitors.map(
-            ({ ticket }, index) => ({ ticket, name: names[index] })), { key: 'ticket' });
+        await Visitor.bulkUpdate( visitors.map( ({ ticket }, index ) => ({ ticket, name: names[ index ] }) ), { key });
 
-        const updated = await Visitor.findAll({ where: { id: visitors.map( ({ id }) => id ) } });
-        const EACH_UPDATE = updated.map( updated => [ visitors.find( ({ id }) => id == updated.id ), updated ])
-            .every( ([ { id, name, ticket }, { id: uid, name: uname, ticket: uticket }]) =>
-                id === id && +ticket === +uticket && name !== uname )
+        const BULK_UPDATED = ( await Visitor.findAll({ where: { id: visitors.map( ({ id }) => id ) } }) ).map( visitor =>
+            [ visitor, visitors.findIndex( ({ id }) => id === visitor.id ) ] ).map( ([ visitor, index ]) =>
+                [ visitor, visitors[ index ], names[ index ] ]).every( ([
+                    { id, name, ticket }, { id: _id, name: _name, ticket: _ticket }, namex
+                ]) => +_id === +id && +_ticket === +ticket && _name !== name && name === namex );
 
-        expect( EACH_UPDATE ).toBe( true );
+        expect( BULK_UPDATED ).toBe( true );
     });
 
 });
