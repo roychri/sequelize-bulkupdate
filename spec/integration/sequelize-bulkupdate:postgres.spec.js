@@ -76,6 +76,27 @@ describe( 'sequelizeBulkUpdate', () =>
             expect( BULK_UPDATED ).toBe( true );
         });
 
+        it( 'only specific fields', async () =>
+        {
+            const LENGTH = 2;
+            const returning = true;
+            const fields = [ 'ticket' ];
+            const names = [ ...Array( LENGTH ) ].map( () => uuid() );
+            const tickets = [ ...Array( LENGTH ) ].map( () => getUN() );
+            const visitors = ( await Visitor.bulkCreate( names.map( () =>
+                ({ name: uuid(), ticket: getUN() }) ), { returning }) ).map( ({ dataValues }) => dataValues );
+
+            await Visitor.bulkUpdate( visitors.map( ({ id }, index ) => ({ id, ticket: tickets[ index ], name: names[ index ] }) ), { fields });
+
+            const BULK_UPDATED = ( await Visitor.findAll({ where: { id: visitors.map( ({ id }) => id ) } }) ).map( visitor =>
+                [ visitor, visitors.findIndex( ({ id }) => id === visitor.id ) ] ).map( ([ visitor, index ]) =>
+                    [ visitor, visitors[ index ], tickets[ index ] ]).every( ([
+                        { id, name, ticket }, { id: _id, name: _name, ticket: _ticket }, ticketx
+                    ]) => +_id === +id && _name === name && +_ticket !== +ticket && +ticket === +ticketx );
+
+            expect( BULK_UPDATED ).toBe( true );
+        });
+
     });
 
 });
