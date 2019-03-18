@@ -97,6 +97,27 @@ describe( 'sequelizeBulkUpdate', () =>
             expect( BULK_UPDATED ).toBe( true );
         });
 
+        it( 'return updated values if { returning: true } option is provided', async () =>
+        {
+            const returning = true;
+            const tickets = [ ...Array( 2 ) ].map( () => getUN() );
+            const initials = tickets.map( () => ({ name: uuid(), ticket: getUN() }) );
+            const persisted = ( await Visitor.bulkCreate( initials, { returning }) ).map( ({ dataValues }) => dataValues );
+            const differences = persisted.map( ({ id }, index ) => ({ id, ticket: tickets[ index ] }) );
+            const [ updates ] = await Visitor.bulkUpdate( differences, { returning });
+
+            for ( let i = 0, l = persisted.length, ticket, current, updated; i < l; i++ ) {
+                current = persisted[ i ];
+                updated = updates.find( ({ id }) => id === current.id );
+                ticket = tickets[ initials.findIndex( ({ name }) => name === current.name ) ];
+
+                expect( updated.id ).toBe( current.id );
+                expect( +updated.ticket ).toBe( +ticket );
+                expect( updated.name ).toBe( current.name );
+                expect( +updated.ticket ).not.toBe( +current.ticket );
+            }
+        });
+
     });
 
 });
