@@ -125,7 +125,7 @@ describe( 'sequelizeBulkUpdate', () =>
             const LENGTH = 2;
             const returning = true;
             const tickets = [ ...Array( LENGTH ) ].map( () => getUN() );
-            const initials = tickets.map( () => ({ name: uuid(), ticket: getUN() }) );
+            const initials = [ ...Array( LENGTH ) ].map( () => ({ name: uuid(), ticket: getUN() }) );
             const persisted = ( await Visitor.bulkCreate( initials, { returning }) ).map( ({ dataValues }) => dataValues );
             const differences = persisted.map( ({ id }, index ) => ({ id, ticket: tickets[ index ] }) );
             const [ updates ] = await Visitor.bulkUpdate( differences, { returning });
