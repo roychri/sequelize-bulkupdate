@@ -99,8 +99,9 @@ describe( 'sequelizeBulkUpdate', () =>
 
         it( 'return updated values if { returning: true } option is provided', async () =>
         {
+            const LENGTH = 2;
             const returning = true;
-            const tickets = [ ...Array( 2 ) ].map( () => getUN() );
+            const tickets = [ ...Array( LENGTH ) ].map( () => getUN() );
             const initials = tickets.map( () => ({ name: uuid(), ticket: getUN() }) );
             const persisted = ( await Visitor.bulkCreate( initials, { returning }) ).map( ({ dataValues }) => dataValues );
             const differences = persisted.map( ({ id }, index ) => ({ id, ticket: tickets[ index ] }) );
