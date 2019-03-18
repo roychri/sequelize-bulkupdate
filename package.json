@@ -1,5 +1,5 @@
 {
-  "name": "sequelize-pg-bulkupdate",
+  "name": "sequelize-bulkupdate",
   "version": "1.0.0",
   "description": "Sequelize add-on to allow optiomized bulk update on postgresql",
   "main": "index.js",
