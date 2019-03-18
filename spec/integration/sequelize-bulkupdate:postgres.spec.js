@@ -142,6 +142,76 @@ describe( 'sequelizeBulkUpdate', () =>
             }
         });
 
+        it( 'return a promise that resolves with a tuple : [ [], ] when NOT PROVIDED { returning: true } option', async () =>
+        {
+            const LENGTH = 2;
+            const returning = true;
+            const names = [ ...Array( LENGTH ) ].map( () => uuid() );
+            const tickets = [ ...Array( LENGTH ) ].map( () => getUN() );
+            const initials = [ ...Array( LENGTH ) ].map( () => ({ name: uuid(), ticket: getUN() }) );
+            const persisted = ( await Visitor.bulkCreate( initials, { returning }) ).map( ({ dataValues }) => dataValues );
+            const differences = persisted.map( ({ id }, index ) => ({ id, name: names[ index ], ticket: tickets[ index ] }) );
+            const [ updated ] = await Visitor.bulkUpdate( differences );
+
+            expect( updated.length ).toBe( 0 );
+        });
+
+        it( 'return a promise that resolves with a tuple : [ updated[], ] when provided { returning: true } option', async () =>
+        {
+            const LENGTH = 2;
+            const returning = true;
+            const names = [ ...Array( LENGTH ) ].map( () => uuid() );
+            const tickets = [ ...Array( LENGTH ) ].map( () => getUN() );
+            const initials = [ ...Array( LENGTH ) ].map( () => ({ name: uuid(), ticket: getUN() }) );
+            const persisted = ( await Visitor.bulkCreate( initials, { returning }) ).map( ({ dataValues }) => dataValues );
+            const differences = persisted.map( ({ id }, index ) => ({ id, name: names[ index ], ticket: tickets[ index ] }) );
+            const [ updated ] = await Visitor.bulkUpdate( differences, { returning });
+
+            expect( updated.map( ({ id }) => id ).sort().join() ).toBe( persisted.map( ({ id }) => id ).sort().join() );
+        });
+
+        it( 'return a promise that resolves with a tuple : [ , count ]', async () =>
+        {
+            const LENGTH = 2;
+            const returning = true;
+            const names = [ ...Array( LENGTH ) ].map( () => uuid() );
+            const tickets = [ ...Array( LENGTH ) ].map( () => getUN() );
+            const initials = [ ...Array( LENGTH ) ].map( () => ({ name: uuid(), ticket: getUN() }) );
+            const persisted = ( await Visitor.bulkCreate( initials, { returning }) ).map( ({ dataValues }) => dataValues );
+            const differences = persisted.map( ({ id }, index ) => ({ id, name: names[ index ], ticket: tickets[ index ] }) );
+            const [ , count ] = await Visitor.bulkUpdate( differences );
+
+            expect( count ).toBe( LENGTH );
+        });
+
+        it( 'return a promise that resolves with a tuple : [ , count ] with { returning: true } option', async () =>
+        {
+            const LENGTH = 2;
+            const returning = true;
+            const names = [ ...Array( LENGTH ) ].map( () => uuid() );
+            const tickets = [ ...Array( LENGTH ) ].map( () => getUN() );
+            const initials = [ ...Array( LENGTH ) ].map( () => ({ name: uuid(), ticket: getUN() }) );
+            const persisted = ( await Visitor.bulkCreate( initials, { returning }) ).map( ({ dataValues }) => dataValues );
+            const differences = persisted.map( ({ id }, index ) => ({ id, name: names[ index ], ticket: tickets[ index ] }) );
+            const [ , count ] = await Visitor.bulkUpdate( differences, { returning });
+
+            expect( count ).toBe( LENGTH );
+        });
+
+        it( 'return a promise that resolves with a tuple : [ [], ] when given an empty array', async () =>
+        {
+            const [ updated ] = await Visitor.bulkUpdate( [] );
+
+            expect( updated.length ).toBe( 0 );
+        });
+
+        it( 'return a promise that resolves with a tuple : [ , 0 ] when given an empty array', async () =>
+        {
+            const [ , count ] = await Visitor.bulkUpdate( [] );
+
+            expect( count ).toBe( 0 );
+        });
+
     });
 
 });
