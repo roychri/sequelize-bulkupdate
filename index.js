@@ -85,5 +85,9 @@ function sqlForBulkUpdate(tableName, values, options, attributes, model) {
     let where = `${quotedTableName}."${primaryKey}" = "data_table"."${primaryKey}"`;
     sql += `WHERE ${where}`;
 
+    if ( options.returning ) {
+        sql += 'RETURNING *'
+    }
+
     return sql;
 }
