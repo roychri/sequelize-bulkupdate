@@ -31,7 +31,7 @@ function bulkUpdate(values, options = {}) {
             'bulkUpdate() only works with postgres dialect.'
         );
     }
-    if ( values.length == 0 ) return Promise.resolve();
+    if ( values.length == 0 ) return Promise.resolve([ [], 0 ]);
     const tableName = this.getTableName();
     const attributes = this.rawAttributes;
     const replacements = values.reduce((acc,d) => {
