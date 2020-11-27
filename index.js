@@ -56,7 +56,7 @@ function bulkUpdate(values, options = {}) {
 function sqlForBulkUpdate(tableName, values, options, attributes, model) {
 
     const primaryKey = options.key || model.primaryKeyAttribute;
-    const quotedTableName = model.QueryGenerator.quoteTable(tableName);
+    const quotedTableName = model.queryGenerator.quoteTable(tableName);
     const fields = Object.keys(attributes).reduce((acc,k) => {
         const a = attributes[ k ];
         if (a.primaryKey) return acc;
